@@ -71,7 +71,7 @@ resource "aws_codebuild_project" "codebuild_project_terraform_plan" {
     git_submodules_config {
       fetch_submodules = true
     }
-
+  }
 #  source {
 #    type      = "CODEPIPELINE"
 #    buildspec = "buildspec_terraform_plan.yml"
