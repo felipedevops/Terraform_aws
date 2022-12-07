@@ -5,28 +5,38 @@ resource "aws_codepipeline" "codepipeline" {
   artifact_store {
     location = aws_s3_bucket.codepipeline_bucket.bucket
     type     = "S3"
-
-    #encryption_key {
-    #  id   = data.aws_kms_alias.s3kmskey.arn
-    #  type = "KMS"
-    #}
   }
 
   stage {
-    name = "${var.infra_env}-Source"
-
+    name = "Source"
     action {
-      name             = "Source"
+      name             = "App"
       category         = "Source"
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
-      version          = "1"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = 1
+      run_order        = 1
       output_artifacts = ["source_output"]
-
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.example.arn
-        FullRepositoryId = "my-organization/example"
-        BranchName       = "${var.branchname}"
+        Repo             = "${var.git_repo_app}"
+        Branch           = "${var.branchname}"
+        OAuthToken       = "${var.github_oauth_token}"
+        Owner            = "${var.repo_owner}"
+      }
+    }
+    action {
+      name             = "Devops"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = 1
+      run_order        = 2
+      output_artifacts = ["source_output_Devops"]
+      configuration = {
+        Repo             = "${var.git_repo}"
+        Branch           = "${var.infra_env}"
+        OAuthToken       = "${var.github_oauth_token}"
+        Owner            = "${var.repo_owner}"
       }
     }
   }
@@ -42,17 +52,8 @@ resource "aws_codepipeline" "codepipeline" {
       input_artifacts  = ["source_output"]
       output_artifacts = ["build_output"]
       version          = "1"
-      #buildspec = <<BUILDSPEC
-      #version: 0.2
-      #
-      #phases:
-      #  build:
-      #    commands:
-      #       - echo "testing"
-      #BUILDSPEC
-
       configuration = {
-        ProjectName = "${var.infra_env}-Project"
+        ProjectName = "${aws_codebuild_project.codebuild_project_terraform_plan.name}"
       }
     }
   }
@@ -92,7 +93,3 @@ resource "aws_s3_bucket_acl" "codepipeline_bucket_acl" {
   bucket = aws_s3_bucket.codepipeline_bucket.id
   acl    = "private"
 }
-
-#data "aws_kms_alias" "s3kmskey" {
-#  name = "alias/myKmsKey"
-#}

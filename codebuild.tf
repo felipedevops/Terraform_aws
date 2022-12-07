@@ -28,16 +28,10 @@ resource "aws_codebuild_project" "codebuild_project_terraform_plan" {
   name          = "${var.infra_env}_devops_codebuild"
   description   = "Terraform codebuild project"
   build_timeout = "5"
-  service_role  = aws_iam_role.codebuild_role[0].arn #var.codebuild_iam_role_arn
-
-  artifacts {
-    type = "CODEPIPELINE"
+  service_role  = aws_iam_role.codebuild_role[0].arn
+   artifacts {
+    type = var.artifacts_type
   }
-
-  #cache {
-  #  type     = "S3"
-  #  location = var.s3_logging_bucket
-  #}
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
@@ -56,26 +50,17 @@ resource "aws_codebuild_project" "codebuild_project_terraform_plan" {
       group_name  = "log-group"
       stream_name = "log-stream"
     }
-
-    #s3_logs {
-    #  status   = "ENABLED"
-    #  location = "${var.s3_logging_bucket_id}/${var.codebuild_project_terraform_plan_name}/build-log"
-    #}
   }
 
   source {
     type            = "GITHUB"
-    location        = "${var.git_repo}"
+    location        = "${var.http_git_clone_url}"
     git_clone_depth = var.git_clone_depth
     buildspec       = templatefile("${path.cwd}/${var.build_spec_file}", {})
     git_submodules_config {
       fetch_submodules = true
     }
   }
-#  source {
-#    type      = "CODEPIPELINE"
-#    buildspec = "buildspec_terraform_plan.yml"
-#}
 
   tags = {
     Terraform = "true"
