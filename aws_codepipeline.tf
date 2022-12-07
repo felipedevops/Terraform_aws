@@ -50,11 +50,11 @@ resource "aws_codepipeline" "codepipeline" {
       owner            = "AWS"
       provider         = "CodeBuild"
       input_artifacts  = ["source_App","source_Devops"]
-      PrimarySource    = "source_Devops"
       output_artifacts = ["build_output"]
       version          = "1"
       configuration = {
         ProjectName = "${aws_codebuild_project.codebuild_project_terraform_plan.name}"
+        PrimarySource    = "source_Devops"
       }
     }
   }
