@@ -10,13 +10,13 @@ resource "aws_codepipeline" "codepipeline" {
   stage {
     name = "Source"
     action {
-      name             = "App"
+      name             = "source_App"
       category         = "Source"
       owner            = "ThirdParty"
       provider         = "GitHub"
       version          = 1
       run_order        = 1
-      output_artifacts = ["source_output"]
+      output_artifacts = ["source_App"]
       configuration = {
         Repo             = "${var.git_repo_app}"
         Branch           = "${var.branchname}"
@@ -31,7 +31,7 @@ resource "aws_codepipeline" "codepipeline" {
       provider         = "GitHub"
       version          = 1
       run_order        = 2
-      output_artifacts = ["source_output_Devops"]
+      output_artifacts = ["source_Devops"]
       configuration = {
         Repo             = "${var.git_repo}"
         Branch           = "${var.infra_env}"
@@ -49,7 +49,8 @@ resource "aws_codepipeline" "codepipeline" {
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
-      input_artifacts  = ["source_output"]
+      input_artifacts  = ["source_App","source_Devops"]
+      PrimarySource    = "source_Devops"
       output_artifacts = ["build_output"]
       version          = "1"
       configuration = {
