@@ -70,7 +70,7 @@ EOF
 
 resource "aws_iam_role" "iam_for_ecs" {
   name = "${var.infra_env}-iam_for_ecs"
-  
+
   assume_role_policy = <<EOF
 {
   "Version": "2008-10-17",
@@ -115,9 +115,9 @@ resource "aws_iam_policy" "policy_ecs" {
 }
 
 resource "aws_iam_policy_attachment" "ecs-attach" {
-  name       = "${var.infra_env}-attachment"
+  name = "${var.infra_env}-attachment"
   #users      = [aws_iam_user.user.name]
-  roles      = [aws_iam_role.iam_for_ecs.name]
+  roles = [aws_iam_role.iam_for_ecs.name]
   #groups     = [aws_iam_group.group.name]
   policy_arn = aws_iam_policy.policy_ecs.arn
 }

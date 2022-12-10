@@ -14,10 +14,10 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-west-1"
+  region = "us-west-1"
 }
 
 locals {
-  timestamp = "${timestamp()}"
-  timestamp_sanitized = "${replace("${local.timestamp}", "/[- TZ:]/", "")}"
+  timestamp           = timestamp()
+  timestamp_sanitized = replace("${local.timestamp}", "/[- TZ:]/", "")
 }

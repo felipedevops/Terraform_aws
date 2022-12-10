@@ -3,9 +3,9 @@
 ##
 
 resource "aws_security_group" "public" {
-  name = "cloudcasts-${var.infra_env}-public-sg"
+  name        = "cloudcasts-${var.infra_env}-public-sg"
   description = "Public internet access"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   tags = {
     Name        = "cloudcasts-${var.infra_env}-public-sg"
@@ -18,7 +18,7 @@ resource "aws_security_group" "public" {
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "public_out" {
   type        = "egress"
@@ -27,13 +27,13 @@ resource "aws_security_group_rule" "public_out" {
   protocol    = "-1"
   cidr_blocks = ["0.0.0.0/0"]
 
- 
+
 
   security_group_id = aws_security_group.public.id
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "public_in_ssh" {
   type              = "ingress"
@@ -45,7 +45,7 @@ resource "aws_security_group_rule" "public_in_ssh" {
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "public_in_http" {
   type              = "ingress"
@@ -57,7 +57,7 @@ resource "aws_security_group_rule" "public_in_http" {
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "public_in_https" {
   type              = "ingress"
@@ -69,7 +69,7 @@ resource "aws_security_group_rule" "public_in_https" {
 
 }
 
- 
+
 
 ###
 
@@ -77,12 +77,12 @@ resource "aws_security_group_rule" "public_in_https" {
 
 ##
 
- 
+
 
 resource "aws_security_group" "private" {
-  name = "cloudcasts-${var.infra_env}-private-sg"
+  name        = "cloudcasts-${var.infra_env}-private-sg"
   description = "Private internet access"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
   tags = {
     Name        = "cloudcasts-${var.infra_env}-private-sg"
     Role        = "private"
@@ -94,26 +94,26 @@ resource "aws_security_group" "private" {
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "private_out" {
-  type        = "egress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.private.id
 
 }
 
- 
+
 
 resource "aws_security_group_rule" "private_in" {
   type              = "ingress"
   from_port         = 0
   to_port           = 65535
   protocol          = "-1"
-  cidr_blocks = [aws_vpc.main.cidr_block]
+  cidr_blocks       = [aws_vpc.main.cidr_block]
   security_group_id = aws_security_group.private.id
 }
 
@@ -124,20 +124,20 @@ resource "aws_security_group_rule" "private_in" {
 resource "aws_security_group" "alb" {
   name        = "terraform_${var.infra_env}_alb_security_group"
   description = "Terraform load balancer security group"
-  vpc_id      = "${aws_vpc.main.id}"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = "${var.allowed_cidr_blocks}"
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = "${var.allowed_cidr_blocks}"
+    cidr_blocks = var.allowed_cidr_blocks
   }
 
   # Allow all outbound traffic.

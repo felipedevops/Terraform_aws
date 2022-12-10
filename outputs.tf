@@ -4,7 +4,7 @@ output "security_group_public" {
 
 output "aws_codestarconnections" {
   value = aws_codestarconnections_connection.example.arn
-} 
+}
 
 output "security_group_private" {
   value = aws_security_group.private.id
@@ -15,7 +15,7 @@ output "lambda" {
 }
 
 output "timestamp" {
-  value = "${local.timestamp_sanitized}"
+  value = local.timestamp_sanitized
 }
 
 

@@ -18,10 +18,10 @@ resource "aws_codepipeline" "codepipeline" {
       run_order        = 1
       output_artifacts = ["source_App"]
       configuration = {
-        Repo             = "${var.git_repo_app}"
-        Branch           = "${var.branchname}"
-        OAuthToken       = "${var.github_oauth_token}"
-        Owner            = "${var.repo_owner}"
+        Repo       = "${var.git_repo_app}"
+        Branch     = "${var.branchname}"
+        OAuthToken = "${var.github_oauth_token}"
+        Owner      = "${var.repo_owner}"
       }
     }
     action {
@@ -33,10 +33,10 @@ resource "aws_codepipeline" "codepipeline" {
       run_order        = 2
       output_artifacts = ["source_Devops"]
       configuration = {
-        Repo             = "${var.git_repo}"
-        Branch           = "${var.infra_env}"
-        OAuthToken       = "${var.github_oauth_token}"
-        Owner            = "${var.repo_owner}"
+        Repo       = "${var.git_repo}"
+        Branch     = "${var.infra_env}"
+        OAuthToken = "${var.github_oauth_token}"
+        Owner      = "${var.repo_owner}"
       }
     }
   }
@@ -49,12 +49,12 @@ resource "aws_codepipeline" "codepipeline" {
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
-      input_artifacts  = ["source_App","source_Devops"]
+      input_artifacts  = ["source_App", "source_Devops"]
       output_artifacts = ["build_output"]
       version          = "1"
       configuration = {
-        ProjectName = "${aws_codebuild_project.codebuild_project_terraform_plan.name}"
-        PrimarySource    = "source_Devops"
+        ProjectName   = "${aws_codebuild_project.codebuild_project_terraform_plan.name}"
+        PrimarySource = "source_Devops"
       }
     }
   }

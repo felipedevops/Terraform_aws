@@ -1,6 +1,6 @@
- resource "aws_iam_role" "iam_for_lambda" {
+resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
-  
+
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -43,9 +43,9 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_policy_attachment" "test-attach" {
-  name       = "test-attachment"
+  name = "test-attachment"
   #users      = [aws_iam_user.user.name]
-  roles      = [aws_iam_role.iam_for_lambda.name]
+  roles = [aws_iam_role.iam_for_lambda.name]
   #groups     = [aws_iam_group.group.name]
   policy_arn = aws_iam_policy.policy.arn
 }

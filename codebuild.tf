@@ -29,7 +29,7 @@ resource "aws_codebuild_project" "codebuild_project_terraform_plan" {
   description   = "Terraform codebuild project"
   build_timeout = "5"
   service_role  = aws_iam_role.codebuild_role[0].arn
-   artifacts {
+  artifacts {
     type = var.artifacts_type
   }
 
@@ -54,7 +54,7 @@ resource "aws_codebuild_project" "codebuild_project_terraform_plan" {
 
   source {
     type            = "GITHUB"
-    location        = "${var.http_git_clone_url}"
+    location        = var.http_git_clone_url
     git_clone_depth = var.git_clone_depth
     buildspec       = templatefile("${path.cwd}/${var.build_spec_file}", {})
     git_submodules_config {
