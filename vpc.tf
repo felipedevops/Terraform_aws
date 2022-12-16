@@ -41,33 +41,37 @@ resource "aws_internet_gateway" "tcb_blog_igw" {
     Name = "${var.infra_env}_devops_igw"
   }
 }
-#
+
 ## Criação da Tabela de Roteamento
-#resource "aws_route_table" "tcb_blog_rt" {
-#  vpc_id = aws_vpc.main.id
-#
-#  route {
-#    cidr_block = "0.0.0.0/0"
-#    gateway_id = aws_internet_gateway.tcb_blog_igw.id
-#  }
-#
-#  tags = {
-#    Name = "tcb_blog_rt"
-#  }
-#}
+resource "aws_route_table" "tcb_blog_rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.tcb_blog_igw.id
+  }
+  tags = {
+    Name = "tcb_blog_rt"
+  }
+}
 #
 ## Criação da Rota Default para Acesso à Internet
-#resource "aws_route" "tcb_blog_routetointernet" {
-#  route_table_id            = aws_route_table.tcb_blog_rt.id
-#  destination_cidr_block    = "0.0.0.0/0"
-#  gateway_id                = aws_internet_gateway.tcb_blog_igw.id
-#}
+resource "aws_route" "tcb_blog_routetointernet" {
+  route_table_id            = aws_route_table.tcb_blog_rt.id
+  destination_cidr_block    = "0.0.0.0/0"
+  gateway_id                = aws_internet_gateway.tcb_blog_igw.id
+}
 #
 ## Associação da Subnet Pública com a Tabela de Roteamento
-#resource "aws_route_table_association" "tcb_blog_pub_association" {
-#  subnet_id      = aws_subnet.PublicSubnet1.id
-#  route_table_id = aws_route_table.tcb_blog_rt.id
-#}
+resource "aws_route_table_association" "tcb_blog_pub_association_one" {
+  subnet_id      = aws_subnet.PublicSubnet1.id
+  route_table_id = aws_route_table.tcb_blog_rt.id
+}
+
+resource "aws_route_table_association" "tcb_blog_pub_association_twe" {
+  subnet_id      = aws_subnet.PublicSubnet2.id
+  route_table_id = aws_route_table.tcb_blog_rt.id
+}
 
 #======= PRIVATE SUBNET
 resource "aws_subnet" "PrivateSubnet3" {

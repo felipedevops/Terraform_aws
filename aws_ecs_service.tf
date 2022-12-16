@@ -77,6 +77,7 @@ resource "aws_launch_configuration" "ecs-launch-configuration" {
   name                 = "${var.infra_env}_ecs-launch-configuration"
   image_id             = var.amiid
   instance_type        = "t2.micro"
+  key_name             = var.ssh-key
   iam_instance_profile = aws_iam_instance_profile.ecs-instance-profile.id
 
   root_block_device {
@@ -91,16 +92,20 @@ resource "aws_launch_configuration" "ecs-launch-configuration" {
 
   security_groups             = ["${aws_security_group.public.id}"]
   associate_public_ip_address = "true"
-  #key_name                    = "${var.ecs_public_keyname}"
   user_data = <<-EOF
-    #! /bin/bash
-    echo ECS_CLUSTER="${aws_ecs_cluster.ecs_cluster.name}" >> /etc/ecs/ecs.config
-    sudo sysctl -w vm.max_map_count=524288
-    sudo apt-get update
-    sudo apt-get install -y apache2
-    sudo systemctl start apache2
-    sudo systemctl enable apache2
-    echo "<h1>Deployed via Terraform</h1>" | sudo tee /var/www/html/index.html
+    #!/bin/bash
+    set -x
+    #====== Install ECS
+    yum update -y
+    amazon-linux-extras disable docker
+    amazon-linux-extras install -y ecs
+    echo ECS_CLUSTER="main_ecs_cluster" >> ~/ecs.config
+    mv ~/ecs.config /etc/ecs/ecs.config
+    systemctl enable --now --no-block ecs.service
+    yum install -y ecs-init
+    cp /usr/lib/systemd/system/ecs.service /etc/systemd/system/ecs.service
+    sed -i '/After=cloud-final.service/d' /etc/systemd/system/ecs.service
+    systemctl daemon-reload
     EOF
 }
 
@@ -119,8 +124,8 @@ resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
   launch_configuration = aws_launch_configuration.ecs-launch-configuration.name
 
   desired_capacity          = 2
-  min_size                  = 1
-  max_size                  = 10
+  min_size                  = 2
+  max_size                  = 5
   health_check_grace_period = 300
   health_check_type         = "EC2"
 }

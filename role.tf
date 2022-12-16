@@ -105,7 +105,8 @@ resource "aws_iam_policy" "policy_ecs" {
           "lambda:*",
           "cloudwatch:GetMetricData",
           "cloudwatch:*",
-          "ecs:*"
+          "ecs:*",
+          "ec2:*"
         ]
         Effect   = "Allow"
         Resource = "*"
